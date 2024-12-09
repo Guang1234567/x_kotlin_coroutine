@@ -1,3 +1,11 @@
+# x_kotlin_coroutine
+
+// TODO:
+
+## `continueOn` Operator
+
+- Usage
+```kotlin
 @file:OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
 
 package com.x.coroutines.ui.home
@@ -175,3 +183,33 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 }
+```
+- Output
+
+```agsl
+  HomeFragment            com.x.coroutines                     I  1Thread.currentThread().name = A
+  HomeFragment            com.x.coroutines                     I  2Thread.currentThread().name = main
+  HomeFragment            com.x.coroutines                     I  3Thread.currentThread().name = B
+  HomeFragment            com.x.coroutines                     I  4Thread.currentThread().name = main
+  HomeFragment            com.x.coroutines                     I  5Thread.currentThread().name = main
+  HomeFragment            com.x.coroutines                     I  6Thread.currentThread().name = A
+  HomeFragment            com.x.coroutines                     I  7Thread.currentThread().name = A
+  HomeFragment            com.x.coroutines                     I  8Thread.currentThread().name = B
+  HomeFragment            com.x.coroutines                     I  withContext(ctxC) {
+                                                                  	9Thread.currentThread().name = C
+  HomeFragment            com.x.coroutines                     I  	10Thread.currentThread().name = A
+  HomeFragment            com.x.coroutines                     I  	10Thread.currentThread().name = D
+  HomeFragment            com.x.coroutines                     I  	withContext(ctxC) {
+                                                                  		9Thread.currentThread().name = C
+  HomeFragment            com.x.coroutines                     I  		10Thread.currentThread().name = B
+                                                                  	}
+  HomeFragment            com.x.coroutines                     I  	10Thread.currentThread().name = D
+                                                                  }
+  HomeFragment            com.x.coroutines                     I  11Thread.currentThread().name = B
+  HomeFragment            com.x.coroutines                     I  async {
+                                                                  	9Thread.currentThread().name = main
+  HomeFragment            com.x.coroutines                     I  	10Thread.currentThread().name = D
+                                                                  }
+  HomeFragment            com.x.coroutines                     I  async {} . name = D
+  HomeFragment            com.x.coroutines                     I  11Thread.currentThread().name = B
+```

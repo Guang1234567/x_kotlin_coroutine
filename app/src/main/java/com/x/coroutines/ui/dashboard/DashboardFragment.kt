@@ -1,3 +1,5 @@
+@file:OptIn(FlowPreview::class)
+
 package com.x.coroutines.ui.dashboard
 
 import android.os.Bundle
@@ -8,6 +10,10 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.x.coroutines.databinding.FragmentDashboardBinding
+import com.x.coroutines.flow.observeOn
+import kotlinx.coroutines.FlowPreview
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.debounce
 
 class DashboardFragment : Fragment() {
 
@@ -23,15 +29,21 @@ class DashboardFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         val dashboardViewModel =
-            ViewModelProvider(this).get(DashboardViewModel::class.java)
+            ViewModelProvider(this)[DashboardViewModel::class.java]
 
         _binding = FragmentDashboardBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
         val textView: TextView = binding.textDashboard
-        dashboardViewModel.text.observe(viewLifecycleOwner) {
+        /*dashboardViewModel.text2.observe(viewLifecycleOwner) {
             textView.text = it
-        }
+        }*/
+        dashboardViewModel.text
+            .debounce(150)
+            .conflate()
+            .observeOn(this@DashboardFragment) {
+                textView.text = it
+            }
         return root
     }
 
