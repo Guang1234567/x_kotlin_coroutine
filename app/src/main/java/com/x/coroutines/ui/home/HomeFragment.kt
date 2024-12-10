@@ -15,8 +15,8 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
 
 import com.x.coroutines.databinding.FragmentHomeBinding
-import com.x.coroutines.flow.continueOn
-import com.x.coroutines.flow.observeOn
+import com.x.coroutines.jvm.operators.continueOn
+import com.x.coroutines.android.flow.observeOn
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi

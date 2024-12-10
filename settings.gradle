@@ -23,4 +23,5 @@ dependencyResolutionManagement {
 
 rootProject.name = "x_kotlin_coroutine"
 include ':app'
+include ':lib-jvm'
 include ':lib-android'

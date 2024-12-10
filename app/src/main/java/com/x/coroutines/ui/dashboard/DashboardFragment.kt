@@ -10,7 +10,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.x.coroutines.databinding.FragmentDashboardBinding
-import com.x.coroutines.flow.observeOn
+import com.x.coroutines.android.flow.observeOn
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce

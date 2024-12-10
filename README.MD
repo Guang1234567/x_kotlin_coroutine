@@ -5,6 +5,7 @@
 ## `continueOn` Operator
 
 - Usage
+
 ```kotlin
 @file:OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
 
@@ -23,8 +24,8 @@ import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
 
 import com.x.coroutines.databinding.FragmentHomeBinding
-import com.x.coroutines.flow.continueOn
-import com.x.coroutines.flow.observeOn
+import android.flow.continueOn
+import android.flow.observeOn
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -184,6 +185,7 @@ class HomeFragment : Fragment() {
     }
 }
 ```
+
 - Output
 
 ```agsl

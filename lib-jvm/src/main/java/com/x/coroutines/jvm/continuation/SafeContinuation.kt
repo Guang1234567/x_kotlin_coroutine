@@ -1,13 +1,13 @@
-package com.x.coroutines.flow
+package com.x.coroutines.jvm.continuation
 
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.jvm.internal.CoroutineStackFrame
-import com.x.coroutines.flow.XCoroutineSingletons.UNDECIDED
-import com.x.coroutines.flow.XCoroutineSingletons.RESUMED
+import com.x.coroutines.jvm.continuation.CoroutineSingletons.UNDECIDED
+import com.x.coroutines.jvm.continuation.CoroutineSingletons.RESUMED
 
-private enum class XCoroutineSingletons { /*COROUTINE_SUSPENDED,*/ UNDECIDED, RESUMED }
+private enum class CoroutineSingletons { /*COROUTINE_SUSPENDED,*/ UNDECIDED, RESUMED }
 
 private val COROUTINE_SUSPENDED: Any get() = kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
 
@@ -77,5 +77,6 @@ internal constructor(
 
     override fun getStackTraceElement(): StackTraceElement? = null
 
-    override fun toString(): String = "com.x.coroutines.flow.SafeContinuation for $delegate"
+    override fun toString(): String =
+        "com.x.coroutines.android.android.flow.SafeContinuation for $delegate"
 }

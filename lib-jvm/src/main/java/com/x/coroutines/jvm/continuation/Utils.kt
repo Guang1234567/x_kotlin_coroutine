@@ -1,4 +1,4 @@
-package com.x.coroutines.flow
+package com.x.coroutines.jvm.continuation
 
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.CoroutineContext

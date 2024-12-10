@@ -1,4 +1,4 @@
-package com.x.coroutines.flow
+package com.x.coroutines.android.flow
 
 import androidx.activity.ComponentActivity
 import androidx.fragment.app.Fragment
@@ -21,11 +21,6 @@ inline val Fragment.viewLifecycle: Lifecycle
 
 inline val Fragment.viewLifecycleScope: LifecycleCoroutineScope
     get() = viewLifecycle.coroutineScope
-
-/*
-inline val LifecycleOwner.lifecycleOwner: LifecycleOwner
-    get() = this
-*/
 
 private fun <T> Flow<T>.observeOn(
     owner: LifecycleOwner,

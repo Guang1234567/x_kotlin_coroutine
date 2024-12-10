@@ -1,9 +1,10 @@
 @file:OptIn(InternalCoroutinesApi::class)
 
-package com.x.coroutines.flow
+package com.x.coroutines.jvm.operators
 
-import android.util.Log
-
+import com.x.coroutines.jvm.continuation.SafeContinuation
+import com.x.coroutines.jvm.continuation._context
+import com.x.coroutines.jvm.continuation._intercepted
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.ensureActive
@@ -19,16 +20,15 @@ import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.InvocationKind
 import kotlin.contracts.contract
 import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
-import kotlin.coroutines.suspendCoroutine
 
 suspend fun continueOn(
     dispatcher: CoroutineDispatcher
 ): Unit {
     // uCont 就是代指`当前协程`
     // Step 1 : suspendCoroutineForContinueOn 的作用就是把当前协程 uCont 进入 suspend 状态, 此时在 Step 2 处`暂停执行`.
-    return suspendCoroutineUninterceptedOrReturn sc@{ uSafeCont ->
+    return suspendCoroutineUninterceptedOrReturn sc@{ unSafeCont ->
         // compute new context
-        val oldContext = uSafeCont.context
+        val oldContext = unSafeCont.context
 
         // FAST PATH #1 -- the new dispatcher is as same as the old one is.
         if (dispatcher == oldContext[ContinuationInterceptor]) {
@@ -36,7 +36,7 @@ suspend fun continueOn(
                 "continueOn", "CoroutineDispatcher 没有变化不切换 ${Thread.currentThread().name}"
             )*/
             //
-            //uSafeCont.resumeWith(Result.success(Unit))
+            //unSafeCont.resumeWith(Result.success(Unit))
             return@sc Unit
         } else {
             // Copy CopyableThreadContextElement if necessary
@@ -44,7 +44,7 @@ suspend fun continueOn(
             // always check for cancellation of new context
             newContext.ensureActive()
 
-            val newCoroutine = ContinueOnContinuation(newContext, uSafeCont)
+            val newCoroutine = ContinueOnContinuation(newContext, unSafeCont)
 
             val block: suspend () -> Unit = b@{
                 /*Log.w(
