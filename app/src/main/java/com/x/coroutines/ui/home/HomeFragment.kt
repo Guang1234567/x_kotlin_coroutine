@@ -1,4 +1,4 @@
-@file:OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class)
+@file:OptIn(ExperimentalCoroutinesApi::class, DelicateCoroutinesApi::class, FlowPreview::class)
 
 package com.x.coroutines.ui.home
 
@@ -10,16 +10,17 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.debounce
 
 import com.x.coroutines.databinding.FragmentHomeBinding
 import com.x.coroutines.jvm.operators.continueOn
 import com.x.coroutines.android.flow.observeOn
+import com.x.coroutines.android.flow.viewLifecycleScope
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.async
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.withContext
@@ -57,42 +58,71 @@ class HomeFragment : Fragment() {
             .conflate()
             .observeOn(fragment = this@HomeFragment) {
                 textView.text = it
+
+                Log.w(
+                    "HomeFragment",
+                    "============================case 1================================="
+                )
+
                 withContext(ctxA) {
                     Log.i(
                         "HomeFragment",
-                        "1Thread.currentThread().name = ${Thread.currentThread().name}"
+                        "Thread.currentThread().name = ${Thread.currentThread().name}"
                     )
                 }
                 Log.i(
                     "HomeFragment",
-                    "2Thread.currentThread().name = ${Thread.currentThread().name}"
+                    "Thread.currentThread().name = ${Thread.currentThread().name}"
                 )
+
+
+                Log.w(
+                    "HomeFragment",
+                    "============================case 2================================="
+                )
+
+
                 withContext(ctxB) {
                     Log.i(
                         "HomeFragment",
-                        "3Thread.currentThread().name = ${Thread.currentThread().name}"
+                        "Thread.currentThread().name = ${Thread.currentThread().name}"
                     )
                 }
                 Log.i(
                     "HomeFragment",
-                    "4Thread.currentThread().name = ${Thread.currentThread().name}"
+                    "Thread.currentThread().name = ${Thread.currentThread().name}"
+                )
+
+                Log.w(
+                    "HomeFragment",
+                    "============================case 3================================="
                 )
 
                 continueOn(Dispatchers.Main.immediate)
                 Log.i(
                     "HomeFragment",
-                    "5Thread.currentThread().name = ${Thread.currentThread().name}"
+                    "Thread.currentThread().name = ${Thread.currentThread().name}"
+                )
+
+                Log.w(
+                    "HomeFragment",
+                    "============================case 4================================="
                 )
 
                 continueOn(ctxA)
                 Log.i(
                     "HomeFragment",
-                    "6Thread.currentThread().name = ${Thread.currentThread().name}"
+                    "Thread.currentThread().name = ${Thread.currentThread().name}"
                 )
                 continueOn(ctxA)
                 Log.i(
                     "HomeFragment",
-                    "7Thread.currentThread().name = ${Thread.currentThread().name}"
+                    "Thread.currentThread().name = ${Thread.currentThread().name}"
+                )
+
+                Log.w(
+                    "HomeFragment",
+                    "============================case 5================================="
                 )
 
                 /*continueOn(ctxC)
@@ -104,56 +134,61 @@ class HomeFragment : Fragment() {
                 continueOn(ctxB)
                 Log.i(
                     "HomeFragment",
-                    "8Thread.currentThread().name = ${Thread.currentThread().name}"
+                    "Thread.currentThread().name = ${Thread.currentThread().name}"
                 )
 
                 withContext(ctxC) {
                     Log.i(
                         "HomeFragment",
-                        "withContext(ctxC) {\n\t9Thread.currentThread().name = ${Thread.currentThread().name}"
+                        "withContext(ctxC) {\n\tThread.currentThread().name = ${Thread.currentThread().name}"
                     )
                     continueOn(ctxA)
                     Log.i(
                         "HomeFragment",
-                        "\t10Thread.currentThread().name = ${Thread.currentThread().name}\n"
+                        "\tThread.currentThread().name = ${Thread.currentThread().name}\n"
                     )
                     continueOn(ctxD)
                     Log.i(
                         "HomeFragment",
-                        "\t10Thread.currentThread().name = ${Thread.currentThread().name}\n"
+                        "\tThread.currentThread().name = ${Thread.currentThread().name}\n"
                     )
 
                     withContext(ctxC) {
                         Log.i(
                             "HomeFragment",
-                            "\twithContext(ctxC) {\n\t\t9Thread.currentThread().name = ${Thread.currentThread().name}"
+                            "\twithContext(ctxC) {\n\t\tThread.currentThread().name = ${Thread.currentThread().name}"
                         )
                         continueOn(ctxB)
                         Log.i(
                             "HomeFragment",
-                            "\t\t10Thread.currentThread().name = ${Thread.currentThread().name}\n\t}"
+                            "\t\tThread.currentThread().name = ${Thread.currentThread().name}\n\t}"
                         )
                     }
 
                     Log.i(
                         "HomeFragment",
-                        "\t10Thread.currentThread().name = ${Thread.currentThread().name}\n}"
+                        "\tThread.currentThread().name = ${Thread.currentThread().name}\n}"
                     )
                 }
                 Log.i(
                     "HomeFragment",
-                    "11Thread.currentThread().name = ${Thread.currentThread().name}"
+                    "Thread.currentThread().name = ${Thread.currentThread().name}"
                 )
 
-                val name = this@HomeFragment.viewLifecycleOwner.lifecycleScope.async {
+                Log.w(
+                    "HomeFragment",
+                    "============================case 6================================="
+                )
+
+                val name = async {
                     Log.i(
                         "HomeFragment",
-                        "async {\n\t9Thread.currentThread().name = ${Thread.currentThread().name}"
+                        "async {\n\tThread.currentThread().name = ${Thread.currentThread().name}"
                     )
                     continueOn(ctxD)
                     Log.i(
                         "HomeFragment",
-                        "\t10Thread.currentThread().name = ${Thread.currentThread().name}\n}"
+                        "\tThread.currentThread().name = ${Thread.currentThread().name}\n}"
                     )
                     return@async Thread.currentThread().name
                 }.await()
@@ -164,8 +199,64 @@ class HomeFragment : Fragment() {
                 )
                 Log.i(
                     "HomeFragment",
-                    "11Thread.currentThread().name = ${Thread.currentThread().name}"
+                    "Thread.currentThread().name = ${Thread.currentThread().name}"
                 )
+
+                Log.w(
+                    "HomeFragment",
+                    "============================case 7================================="
+                )
+
+                val name2 = async(ctxA) {
+                    Log.i(
+                        "HomeFragment",
+                        "async {\n\tThread.currentThread().name = ${Thread.currentThread().name}"
+                    )
+                    continueOn(ctxC)
+                    Log.i(
+                        "HomeFragment",
+                        "\tThread.currentThread().name = ${Thread.currentThread().name}\n}"
+                    )
+                    return@async Thread.currentThread().name
+                }.await()
+
+                Log.i(
+                    "HomeFragment",
+                    "async {} . name2 = $name2"
+                )
+                Log.i(
+                    "HomeFragment",
+                    "Thread.currentThread().name = ${Thread.currentThread().name}"
+                )
+
+                Log.w(
+                    "HomeFragment",
+                    "============================case 8================================="
+                )
+
+                withContext(ctxC) {
+                    val name3 = async {
+                        Log.i(
+                            "HomeFragment",
+                            "async {\n\tThread.currentThread().name = ${Thread.currentThread().name}"
+                        )
+                        continueOn(ctxC)
+                        Log.i(
+                            "HomeFragment",
+                            "\tThread.currentThread().name = ${Thread.currentThread().name}\n}"
+                        )
+                        return@async Thread.currentThread().name
+                    }.await()
+
+                    Log.i(
+                        "HomeFragment",
+                        "async {} . name3 = $name3"
+                    )
+                    Log.i(
+                        "HomeFragment",
+                        "Thread.currentThread().name = ${Thread.currentThread().name}"
+                    )
+                }
             }
         return root
     }

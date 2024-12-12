@@ -22,27 +22,29 @@ inline val Fragment.viewLifecycle: Lifecycle
 inline val Fragment.viewLifecycleScope: LifecycleCoroutineScope
     get() = viewLifecycle.coroutineScope
 
-private fun <T> Flow<T>.observeOn(
+private fun <T> Flow<T>.observeOnImpl(
     owner: LifecycleOwner,
     context: CoroutineContext = Dispatchers.Main,
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
-    action: suspend (T) -> Unit
+    action: suspend LifecycleCoroutineScope.(T) -> Unit,
 ): Job =
-    flowOn(context)
-        .flowWithLifecycle(lifecycle = owner.lifecycle, minActiveState = minActiveState)
-        .onEach(action)
+    flowWithLifecycle(lifecycle = owner.lifecycle, minActiveState = minActiveState)
+        .flowOn(context)
+        .onEach {
+            owner.lifecycleScope.action(it)
+        }
         .launchIn(owner.lifecycleScope)
 
 fun <T> Flow<T>.observeOn(
     fragment: Fragment,
     context: CoroutineContext = Dispatchers.Main,
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
-    action: suspend (T) -> Unit
-): Job = observeOn(fragment.viewLifecycleOwner, context, minActiveState, action)
+    action: suspend LifecycleCoroutineScope.(T) -> Unit,
+): Job = observeOnImpl(fragment.viewLifecycleOwner, context, minActiveState, action)
 
 fun <T> Flow<T>.observeOn(
     activity: ComponentActivity,
     context: CoroutineContext = Dispatchers.Main,
     minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
-    action: suspend (T) -> Unit
-): Job = observeOn(activity, context, minActiveState, action)
+    action: suspend LifecycleCoroutineScope.(T) -> Unit,
+): Job = observeOnImpl(activity, context, minActiveState, action)
