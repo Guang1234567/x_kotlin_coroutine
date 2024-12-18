@@ -10,20 +10,28 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import kotlinx.coroutines.flow.conflate
-import kotlinx.coroutines.flow.debounce
-
-import com.x.coroutines.databinding.FragmentHomeBinding
-import com.x.coroutines.jvm.operators.continueOn
+import com.x.coroutines.android.flow.asLifecycleFlow
 import com.x.coroutines.android.flow.observeOn
 import com.x.coroutines.android.flow.viewLifecycleScope
+import com.x.coroutines.databinding.FragmentHomeBinding
+import com.x.coroutines.jvm.operators.bufferTimeout
+import com.x.coroutines.jvm.operators.continueOn
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.conflate
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.newSingleThreadContext
 import kotlinx.coroutines.withContext
+import reactivecircus.flowbinding.android.view.clicks
+import kotlin.time.Duration
+import kotlin.time.Duration.Companion.milliseconds
 
 class HomeFragment : Fragment() {
 
@@ -53,16 +61,47 @@ class HomeFragment : Fragment() {
         /*homeViewModel.text2.observe(viewLifecycleOwner) {
             textView.text = it
         }*/
+
+        textView.clicksCountInFixedTimeWindow()
+            /*.onEach {
+                Log.w(
+                    "HomeFragment",
+                    "Clicked $it times !"
+                )
+            }.launchIn(this@HomeFragment.viewLifecycleScope)*/
+            .observeOn(this@HomeFragment) {
+                Log.w(
+                    "HomeFragment",
+                    "Clicked $it times !"
+                )
+            }
+
         homeViewModel.text
+            // ---  点击事件可以用一下 👇, 如果是类似于微信那种每一条消息都要显示的情况就不要用了.
             .debounce(150)
             .conflate()
-            .observeOn(fragment = this@HomeFragment) {
+            // ---  点击事件可以用一下 👆
+            .asLifecycleFlow(fragment = this@HomeFragment)
+            .flowWithLifecycle()
+            .flowOnMain()
+            .onEach {
                 textView.text = it
 
                 Log.w(
                     "HomeFragment",
                     "============================case 1================================="
                 )
+                /*launch(Dispatchers.Unconfined) { // not confined -- will work with main thread
+                    Log.w(
+                        "HomeFragment",
+                        "Unconfined      : I'm working in thread ${Thread.currentThread().name}"
+                    )
+                    delay(500)
+                    Log.w(
+                        "HomeFragment",
+                        "Unconfined      : After delay in thread ${Thread.currentThread().name}"
+                    )
+                }*/
 
                 withContext(ctxA) {
                     Log.i(
@@ -240,7 +279,7 @@ class HomeFragment : Fragment() {
                             "HomeFragment",
                             "async {\n\tThread.currentThread().name = ${Thread.currentThread().name}"
                         )
-                        continueOn(ctxC)
+                        continueOn(ctxA)
                         Log.i(
                             "HomeFragment",
                             "\tThread.currentThread().name = ${Thread.currentThread().name}\n}"
@@ -258,6 +297,7 @@ class HomeFragment : Fragment() {
                     )
                 }
             }
+            .launch()
         return root
     }
 
@@ -266,3 +306,8 @@ class HomeFragment : Fragment() {
         _binding = null
     }
 }
+
+fun View.clicksCountInFixedTimeWindow(timeout: Duration = 3000.milliseconds): Flow<Int> =
+    clicks().bufferTimeout(
+        7u, timeout
+    ).map { it.size }

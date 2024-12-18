@@ -8,6 +8,7 @@ import com.x.coroutines.jvm.continuation._intercepted
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.ensureActive
+import kotlinx.coroutines.intrinsics.startCoroutineCancellable
 
 
 import kotlin.coroutines.Continuation
@@ -55,7 +56,7 @@ suspend fun continueOn(
             }
 
             // SLOW PATH -- use new dispatcher
-            block.startCoroutine(newCoroutine)
+            block.startCoroutineCancellable(newCoroutine)
 
             kotlin.coroutines.intrinsics.COROUTINE_SUSPENDED
         }

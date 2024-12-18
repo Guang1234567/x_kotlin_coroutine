@@ -1,12 +1,12 @@
 # x_kotlin_coroutine
 
-If it weren't for the capabilities of some programming languages such as 
-- Kotlin's **`Coroutine`**, 
+If it weren't for the capabilities of some programming languages such as
+
+- Kotlin's **`Coroutine`**,
 - Python's **`Coroutine`**,
 - Java's **`Future`** and **`Observable`**,
 - Javascript's **`Promise`**,
 - and so on ...
-
 
 , the asynchronous code would be constructed into the infamous Callback hell.
 
@@ -87,8 +87,9 @@ fun processUserData(processedOrderHistory: String, userData: String, callback: (
 }
 ```
 
-This example illustrates how invoking parent callbacks within nested callbacks can lead to an extremely complex and deeply nested structure,
-    making the code very difficult to read, understand, and maintain.
+This example illustrates how invoking parent callbacks within nested callbacks can lead to an
+extremely complex and deeply nested structure,
+making the code very difficult to read, understand, and maintain.
 </details>
 
 ---
@@ -162,10 +163,10 @@ suspend fun processUserData(processedOrderHistory: String, userData: String): St
 
 </details>
 
-
 ### Operators
 
-Using the following operators can enhance our ability to handle various complex asynchronous business scenarios in a more highly efficient and simple way.
+Using the following operators can enhance our ability to handle various complex asynchronous
+business scenarios in a more highly efficient and simple way.
 
 The following operators is grouped by usage scenarios.
 
