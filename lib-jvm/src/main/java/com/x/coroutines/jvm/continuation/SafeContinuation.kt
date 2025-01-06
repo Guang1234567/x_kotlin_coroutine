@@ -1,11 +1,11 @@
 package com.x.coroutines.jvm.continuation
 
+import com.x.coroutines.jvm.continuation.CoroutineSingletons.RESUMED
+import com.x.coroutines.jvm.continuation.CoroutineSingletons.UNDECIDED
 import java.util.concurrent.atomic.AtomicReferenceFieldUpdater
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.CoroutineContext
 import kotlin.coroutines.jvm.internal.CoroutineStackFrame
-import com.x.coroutines.jvm.continuation.CoroutineSingletons.UNDECIDED
-import com.x.coroutines.jvm.continuation.CoroutineSingletons.RESUMED
 
 private enum class CoroutineSingletons { /*COROUTINE_SUSPENDED,*/ UNDECIDED, RESUMED }
 

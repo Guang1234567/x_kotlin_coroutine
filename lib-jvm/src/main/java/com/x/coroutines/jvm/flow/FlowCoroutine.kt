@@ -2,17 +2,8 @@
 
 package com.x.coroutines.jvm.flow
 
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.coroutineScope
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.FlowCollector
-import kotlinx.coroutines.flow.flow
 import kotlin.experimental.ExperimentalTypeInference
 
-internal fun <R> scopedFlow(@BuilderInference block: suspend CoroutineScope.(FlowCollector<R>) -> Unit): Flow<R> =
-    flow {
-        coroutineScope { block(this@flow) }
-    }
 /*
 internal fun <T, R> ScopeCoroutine<T>.startUndispatchedOrReturn(
     receiver: R, block: suspend R.() -> T

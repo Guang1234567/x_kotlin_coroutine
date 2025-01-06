@@ -1,6 +1,9 @@
-@file:OptIn(ExperimentalCoroutinesApi::class)
+@file:OptIn(
+    ExperimentalCoroutinesApi::class, ExperimentalCoroutinesApi::class,
+    ExperimentalCoroutinesApi::class
+)
 
-package com.x.coroutines.jvm.operators
+package com.x.coroutines.jvm.flow.operators
 
 import com.x.coroutines.jvm.flow.scopedFlow
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -16,8 +19,9 @@ import kotlinx.coroutines.selects.onTimeout
 import kotlinx.coroutines.selects.whileSelect
 import kotlin.time.Duration
 
+@OptIn(ExperimentalCoroutinesApi::class)
 fun <T> Flow<T>.bufferTimeout(capacity: UInt, window: Duration): Flow<List<T>> =
-    scopedFlow { downStream ->
+    scopedFlow<List<T>>() { downstream ->
         val upStream = this@bufferTimeout
         val size: Int = capacity.toInt()
 
@@ -27,7 +31,11 @@ fun <T> Flow<T>.bufferTimeout(capacity: UInt, window: Duration): Flow<List<T>> =
                 .produceIn(this@scopedFlow)
 
         suspend fun FlowCollector<List<T>>.emitThenClear() {
-            emit(events.take(size))
+            //println("生产者准备发送消息")
+            //emit(events.take(size))
+            emit(events)
+            //this.send(events)
+            //println("生产者发送消息: $events")
             events.clear()
         }
 
@@ -36,7 +44,7 @@ fun <T> Flow<T>.bufferTimeout(capacity: UInt, window: Duration): Flow<List<T>> =
                 value.onSuccess {
                     events.add(it)
                     if (events.size >= size) {
-                        downStream.emitThenClear()
+                        downstream.emitThenClear()
                     }
                 }.onClosed {
                     return@onReceiveCatching false
@@ -46,7 +54,7 @@ fun <T> Flow<T>.bufferTimeout(capacity: UInt, window: Duration): Flow<List<T>> =
 
             onTimeout(window) {
                 if (events.isNotEmpty()) {
-                    downStream.emitThenClear()
+                    downstream.emitThenClear()
                 }
                 return@onTimeout true
             }
